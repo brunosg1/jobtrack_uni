@@ -1,0 +1,59 @@
+name: jobtrack_uni
+description: "O JobTrack Uni ajuda estudantes a organizar seu portfólio e acompanhar de forma eficiente as candidaturas para vagas de estágio."
+publish_to: 'none' 
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.2.3 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  
+  # Para persistência de dados chave-valor
+  shared_preferences: ^2.2.2
+  
+  # Para renderizar as políticas em Markdown
+  flutter_markdown: ^0.6.18
+  
+  # Para os indicadores de página (dots) no onboarding
+  smooth_page_indicator: ^1.1.0
+  
+  # Para gerenciamento de estado e injeção de dependência (opcional, mas recomendado)
+  provider: ^6.1.1
+  
+  cupertino_icons: ^1.0.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  
+  # Para gerar ícones do app a partir de um asset
+  flutter_launcher_icons: ^0.13.1
+  
+  flutter_lints: ^2.0.0
+
+# Configuração para o flutter_launcher_icons
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/icon/icon.png"
+  min_sdk_android: 21 #required: min_sdk_android_for_adaptive_icons is 26
+  web:
+    generate: true
+    image_path: "assets/icon/icon.png"
+    background_color: "#0B1220"
+    theme_color: "#0B1220"
+  windows:
+    generate: true
+    image_path: "assets/icon/icon.png"
+    icon_size: 48 # min:48, max:256, default: 48
+
+flutter:
+  uses-material-design: true
+
+  # Para incluir os arquivos de política no app
+  assets:
+    - assets/
+    - assets/icon/
