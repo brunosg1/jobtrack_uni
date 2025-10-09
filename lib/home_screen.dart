@@ -1,10 +1,51 @@
 import 'package:flutter/material.dart';
+import 'package:jobtrack_uni/add_card_screen.dart';
+import 'package:jobtrack_uni/job_card_model.dart';
+import 'package:jobtrack_uni/job_card_widget.dart';
 import 'package:jobtrack_uni/onboarding_screen.dart';
 import 'package:jobtrack_uni/prefs_service.dart';
 import 'package:provider/provider.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  List<JobCard> _jobCards = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadCards();
+  }
+
+  void _loadCards() {
+    final prefsService = Provider.of<PrefsService>(context, listen: false);
+    setState(() {
+      _jobCards = prefsService.getJobCards();
+    });
+  }
+
+  void _saveCards() {
+    final prefsService = Provider.of<PrefsService>(context, listen: false);
+    prefsService.saveJobCards(_jobCards);
+  }
+
+  void _navigateAndAddCard() async {
+    final newCard = await Navigator.of(context).push<JobCard>(
+      MaterialPageRoute(builder: (context) => const AddCardScreen()),
+    );
+
+    if (newCard != null) {
+      setState(() {
+        _jobCards.add(newCard);
+      });
+      _saveCards();
+    }
+  }
 
   void _showRevokeConsentDialog(BuildContext context, PrefsService prefsService) {
     showDialog(
@@ -26,24 +67,21 @@ class HomeScreen extends StatelessWidget {
                 Navigator.of(dialogContext).pop();
                 await prefsService.revokeConsent();
 
-                // SnackBar com Desfazer (RF-6)
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: const Text('Consentimento revogado.'),
                     action: SnackBarAction(
                       label: 'Desfazer',
                       onPressed: () async {
-                         // Se desfizer, restaura o aceite e não faz nada.
                          await prefsService.saveConsent();
                       },
                     ),
                   ),
                 );
                 
-                // Aguarda o SnackBar terminar para ver se o usuário desfez.
                 await Future.delayed(const Duration(seconds: 4));
 
-                if (!prefsService.hasAcceptedCurrentPolicies()) {
+                if (!prefsService.hasAcceptedCurrentPolicies() && mounted) {
                     Navigator.of(context).pushAndRemoveUntil(
                       MaterialPageRoute(builder: (context) => const OnboardingScreen()),
                       (Route<dynamic> route) => false,
@@ -63,47 +101,57 @@ class HomeScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('JobTrack Uni'),
+        title: const Text('Minhas Vagas'),
         actions: [
           IconButton(
             icon: const Icon(Icons.settings),
             onPressed: () {
-              // Placeholder para tela de configurações.
-              // A opção de revogar está aqui como exemplo.
-               _showRevokeConsentDialog(context, prefsService);
+              _showRevokeConsentDialog(context, prefsService);
             },
           ),
         ],
       ),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // Ilustração "Hero/empty" (3.4)
-              Icon(Icons.folder_copy_outlined, size: 120, color: Theme.of(context).colorScheme.secondary.withOpacity(0.7)),
-              const SizedBox(height: 24),
-              Text(
-                'Nenhuma vaga adicionada',
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(color: Colors.white),
-              ),
-              const SizedBox(height: 12),
-              const Text(
-                'Toque no botão "+" para criar seu primeiro card de vaga e começar a organizar suas candidaturas.',
-                textAlign: TextAlign.center,
-              ),
-            ],
-          ),
+      body: _jobCards.isEmpty ? _buildEmptyState() : _buildCardList(),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _navigateAndAddCard,
+        tooltip: 'Adicionar Vaga',
+        child: const Icon(Icons.add),
+      ),
+    );
+  }
+
+  Widget _buildEmptyState() {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.folder_copy_outlined, size: 120, color: Theme.of(context).colorScheme.secondary.withOpacity(0.7)),
+            const SizedBox(height: 24),
+            Text(
+              'Nenhuma vaga adicionada',
+              style: Theme.of(context).textTheme.headlineSmall?.copyWith(color: Colors.white),
+            ),
+            const SizedBox(height: 12),
+            const Text(
+              'Toque no botão "+" para criar seu primeiro card de vaga e começar a organizar suas candidaturas.',
+              textAlign: TextAlign.center,
+            ),
+          ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // Ação para criar o 1º card de vaga.
-        },
-        child: const Icon(Icons.add),
-        tooltip: 'Adicionar Vaga',
-      ),
+    );
+  }
+
+  Widget _buildCardList() {
+    return ListView.builder(
+      itemCount: _jobCards.length,
+      itemBuilder: (context, index) {
+        // Ordena a lista para mostrar os mais recentes primeiro
+        final card = _jobCards.reversed.toList()[index];
+        return JobCardWidget(card: card);
+      },
     );
   }
 }

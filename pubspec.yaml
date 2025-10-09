@@ -2,7 +2,7 @@ name: jobtrack_uni
 description: "O JobTrack Uni ajuda estudantes a organizar seu portfólio e acompanhar de forma eficiente as candidaturas para vagas de estágio."
 publish_to: 'none' 
 
-version: 1.0.0+1
+version: 1.0.1+2
 
 environment:
   sdk: '>=3.2.3 <4.0.0'
@@ -10,6 +10,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+    
+  intl: ^0.18.1
   
   # Para persistência de dados chave-valor
   shared_preferences: ^2.2.2
