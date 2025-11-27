@@ -4,7 +4,8 @@ import 'package:jobtrack_uni/domain/entities/job_card.dart';
 import 'package:jobtrack_uni/job_card_widget.dart';
 import 'package:jobtrack_uni/onboarding_screen.dart';
 import 'package:jobtrack_uni/prefs_service.dart';
-import 'package:jobtrack_uni/domain/repositories/job_repository.dart';
+import 'package:jobtrack_uni/domain/usecases/get_job_cards.dart';
+import 'package:jobtrack_uni/domain/usecases/save_job_cards.dart';
 import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -24,9 +25,8 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _loadCards() {
-    final jobRepo = Provider.of<JobRepository>(context, listen: false);
-    // jobRepo methods are async-friendly; wrap to handle futures
-    jobRepo.getJobCards().then((cards) {
+    final getJobCards = Provider.of<GetJobCards>(context, listen: false);
+    getJobCards().then((cards) {
       if (mounted) {
         setState(() {
           _jobCards = cards;
@@ -36,8 +36,8 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _saveCards() {
-    final jobRepo = Provider.of<JobRepository>(context, listen: false);
-    jobRepo.saveJobCards(_jobCards);
+    final saveJobCards = Provider.of<SaveJobCards>(context, listen: false);
+    saveJobCards(_jobCards);
   }
 
   void _navigateAndAddCard() async {

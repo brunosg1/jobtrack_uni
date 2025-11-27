@@ -4,6 +4,8 @@ import 'package:jobtrack_uni/domain/repositories/job_repository.dart';
 import 'package:jobtrack_uni/data/repositories/shared_prefs_job_repository.dart';
 import 'package:jobtrack_uni/splash_screen.dart';
 import 'package:provider/provider.dart';
+import 'package:jobtrack_uni/domain/usecases/get_job_cards.dart';
+import 'package:jobtrack_uni/domain/usecases/save_job_cards.dart';
 
 void main() async {
   // Garante que os bindings do Flutter foram inicializados antes de qualquer outra coisa.
@@ -16,12 +18,18 @@ void main() async {
   // Cria repositório que implementa a abstração JobRepository
   final JobRepository jobRepository = SharedPrefsJobRepository(prefsService);
 
+  // Usecases
+  final getJobCards = GetJobCards(jobRepository);
+  final saveJobCards = SaveJobCards(jobRepository);
+
   runApp(
     // Usa o Provider para disponibilizar tanto PrefsService quanto JobRepository na árvore de widgets.
     MultiProvider(
       providers: [
         Provider<PrefsService>.value(value: prefsService),
         Provider<JobRepository>.value(value: jobRepository),
+        Provider<GetJobCards>.value(value: getJobCards),
+        Provider<SaveJobCards>.value(value: saveJobCards),
       ],
       child: const JobTrackUniApp(),
     ),
