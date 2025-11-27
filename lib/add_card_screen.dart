@@ -42,8 +42,7 @@ class _AddCardScreenState extends State<AddCardScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Scaffold(
+  return Scaffold(
       appBar: AppBar(
         title: const Text('Adicionar Nova Vaga'),
       ),

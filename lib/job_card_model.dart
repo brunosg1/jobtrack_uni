@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 class JobCard {
   final String id;
   final String companyName;

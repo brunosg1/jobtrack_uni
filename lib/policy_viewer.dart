@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_markdown/flutter_markdown.dart';
-import 'package:jobtrack_uni/prefs_service.dart';
-import 'package:provider/provider.dart';
+// Imports removidos que não são necessários neste arquivo
 
 class PolicyViewer extends StatefulWidget {
   final String markdownAssetPath;
