@@ -26,6 +26,27 @@ class _AddCardScreenState extends State<AddCardScreen> {
     super.dispose();
   }
 
+  @override
+  void initState() {
+    super.initState();
+    _companyController = TextEditingController(text: widget.initialCard?.companyName ?? '');
+    _jobTitleController = TextEditingController(text: widget.initialCard?.jobTitle ?? '');
+    _notesController = TextEditingController(text: widget.initialCard?.notes ?? '');
+    _selectedStatus = widget.initialCard?.status ?? _selectedStatus;
+  }
+
+  @override
+  void didUpdateWidget(covariant AddCardScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Se o initialCard mudou (por exemplo reuso do widget), atualiza os controllers
+    if (oldWidget.initialCard?.id != widget.initialCard?.id) {
+      _companyController.text = widget.initialCard?.companyName ?? '';
+      _jobTitleController.text = widget.initialCard?.jobTitle ?? '';
+      _notesController.text = widget.initialCard?.notes ?? '';
+      _selectedStatus = widget.initialCard?.status ?? _selectedStatus;
+    }
+  }
+
   void _saveCard() {
     if (_formKey.currentState!.validate()) {
       final newCard = JobCard(
@@ -43,10 +64,6 @@ class _AddCardScreenState extends State<AddCardScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Inicializa controllers a partir do initialCard
-    _companyController = TextEditingController(text: widget.initialCard?.companyName ?? '');
-    _jobTitleController = TextEditingController(text: widget.initialCard?.jobTitle ?? '');
-    _notesController = TextEditingController(text: widget.initialCard?.notes ?? '');
     return Scaffold(
       appBar: AppBar(
         title: const Text('Adicionar Nova Vaga'),
