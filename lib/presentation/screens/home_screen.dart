@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:jobtrack_uni/presentation/screens/add_card_screen.dart';
 import 'package:jobtrack_uni/domain/entities/job_card.dart';
 import 'package:jobtrack_uni/presentation/widgets/job_card_widget.dart';
+import 'package:jobtrack_uni/features/job_card/presentation/dialogs/provider_actions_dialog.dart';
+import 'package:jobtrack_uni/features/job_card/presentation/dialogs/job_card_form_dialog.dart';
 import 'package:jobtrack_uni/presentation/screens/onboarding_screen.dart';
 import 'package:jobtrack_uni/prefs_service.dart';
 import 'package:provider/provider.dart';
@@ -156,7 +158,36 @@ class _HomeScreenState extends State<HomeScreen> {
       itemBuilder: (context, index) {
         // Ordena a lista para mostrar os mais recentes primeiro
         final card = _jobCards.reversed.toList()[index];
-        return JobCardWidget(card: card);
+        return GestureDetector(
+          onLongPress: () {
+            // Abre diálogo de ações
+            showProviderActionsDialog(
+              context,
+              title: 'Ações da vaga',
+              subtitle: '${card.companyName} - ${card.jobTitle}',
+              onEdit: () async {
+                // Abre formulário em modo edição
+                final edited = await showJobCardFormDialog(context, initialCard: card);
+                if (edited != null) {
+                  // substitui o item
+                  setState(() {
+                    final idx = _jobCards.indexWhere((c) => c.id == card.id);
+                    if (idx != -1) _jobCards[idx] = edited;
+                  });
+                  _saveCards();
+                }
+              },
+              onRemove: () async {
+                // Remove item e persiste
+                setState(() {
+                  _jobCards.removeWhere((c) => c.id == card.id);
+                });
+                _saveCards();
+              },
+            );
+          },
+          child: JobCardWidget(card: card),
+        );
       },
     );
   }
