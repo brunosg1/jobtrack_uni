@@ -17,9 +17,12 @@ void main() async {
   final JobRepository jobRepository = SharedPrefsJobRepository(prefsService);
 
   runApp(
-    // Usa o Provider para disponibilizar o JobRepository (abstração) na árvore de widgets.
-    Provider<JobRepository>.value(
-      value: jobRepository,
+    // Usa o Provider para disponibilizar tanto PrefsService quanto JobRepository na árvore de widgets.
+    MultiProvider(
+      providers: [
+        Provider<PrefsService>.value(value: prefsService),
+        Provider<JobRepository>.value(value: jobRepository),
+      ],
       child: const JobTrackUniApp(),
     ),
   );
