@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:jobtrack_uni/prefs_service.dart';
 import 'package:jobtrack_uni/domain/repositories/job_repository.dart';
 import 'package:jobtrack_uni/data/repositories/shared_prefs_job_repository.dart';
-import 'package:jobtrack_uni/splash_screen.dart';
+import 'package:jobtrack_uni/presentation/screens/splash_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:jobtrack_uni/domain/usecases/get_job_cards.dart';
 import 'package:jobtrack_uni/domain/usecases/save_job_cards.dart';
