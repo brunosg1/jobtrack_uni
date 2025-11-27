@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:jobtrack_uni/job_card_model.dart';
+import 'package:jobtrack_uni/domain/entities/job_card.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 // Chaves de persistência definidas no PRD.

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:jobtrack_uni/add_card_screen.dart';
-import 'package:jobtrack_uni/job_card_model.dart';
+import 'package:jobtrack_uni/domain/entities/job_card.dart';
 import 'package:jobtrack_uni/job_card_widget.dart';
 import 'package:jobtrack_uni/onboarding_screen.dart';
 import 'package:jobtrack_uni/prefs_service.dart';

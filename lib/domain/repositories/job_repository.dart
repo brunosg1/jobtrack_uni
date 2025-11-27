@@ -1,4 +1,4 @@
-import 'package:jobtrack_uni/job_card_model.dart';
+import 'package:jobtrack_uni/domain/entities/job_card.dart';
 
 abstract class JobRepository {
   Future<void> saveJobCards(List<JobCard> cards);

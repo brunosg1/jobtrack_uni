@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:jobtrack_uni/job_card_model.dart';
+import 'package:jobtrack_uni/domain/entities/job_card.dart';
 import 'package:intl/intl.dart';
 
 class JobCardWidget extends StatelessWidget {
