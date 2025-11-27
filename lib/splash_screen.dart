@@ -15,7 +15,11 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    _decideNextScreen();
+    // Executa após o primeiro frame para garantir que o BuildContext
+    // já esteja inserido na árvore e que o Provider esteja disponível.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _decideNextScreen();
+    });
   }
 
   Future<void> _decideNextScreen() async {
