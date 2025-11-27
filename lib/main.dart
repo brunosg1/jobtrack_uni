@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:jobtrack_uni/prefs_service.dart';
+import 'package:jobtrack_uni/domain/repositories/job_repository.dart';
+import 'package:jobtrack_uni/data/repositories/shared_prefs_job_repository.dart';
 import 'package:jobtrack_uni/splash_screen.dart';
 import 'package:provider/provider.dart';
 
@@ -11,10 +13,13 @@ void main() async {
   final prefsService = PrefsService();
   await prefsService.init();
 
+  // Cria repositório que implementa a abstração JobRepository
+  final JobRepository jobRepository = SharedPrefsJobRepository(prefsService);
+
   runApp(
-    // Usa o Provider para disponibilizar o PrefsService na árvore de widgets.
-    Provider<PrefsService>.value(
-      value: prefsService,
+    // Usa o Provider para disponibilizar o JobRepository (abstração) na árvore de widgets.
+    Provider<JobRepository>.value(
+      value: jobRepository,
       child: const JobTrackUniApp(),
     ),
   );

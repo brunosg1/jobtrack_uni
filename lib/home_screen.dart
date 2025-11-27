@@ -4,6 +4,7 @@ import 'package:jobtrack_uni/job_card_model.dart';
 import 'package:jobtrack_uni/job_card_widget.dart';
 import 'package:jobtrack_uni/onboarding_screen.dart';
 import 'package:jobtrack_uni/prefs_service.dart';
+import 'package:jobtrack_uni/domain/repositories/job_repository.dart';
 import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -23,15 +24,20 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _loadCards() {
-    final prefsService = Provider.of<PrefsService>(context, listen: false);
-    setState(() {
-      _jobCards = prefsService.getJobCards();
+    final jobRepo = Provider.of<JobRepository>(context, listen: false);
+    // jobRepo methods are async-friendly; wrap to handle futures
+    jobRepo.getJobCards().then((cards) {
+      if (mounted) {
+        setState(() {
+          _jobCards = cards;
+        });
+      }
     });
   }
 
   void _saveCards() {
-    final prefsService = Provider.of<PrefsService>(context, listen: false);
-    prefsService.saveJobCards(_jobCards);
+    final jobRepo = Provider.of<JobRepository>(context, listen: false);
+    jobRepo.saveJobCards(_jobCards);
   }
 
   void _navigateAndAddCard() async {
@@ -97,7 +103,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final prefsService = Provider.of<PrefsService>(context, listen: false);
+  final prefsService = Provider.of<PrefsService>(context, listen: false);
 
     return Scaffold(
       appBar: AppBar(
