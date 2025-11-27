@@ -4,6 +4,7 @@ import 'package:jobtrack_uni/domain/entities/job_card.dart';
 import 'package:jobtrack_uni/presentation/widgets/job_card_widget.dart';
 import 'package:jobtrack_uni/features/job_card/presentation/dialogs/provider_actions_dialog.dart';
 import 'package:jobtrack_uni/features/job_card/presentation/dialogs/job_card_form_dialog.dart';
+import 'package:jobtrack_uni/features/job_card/presentation/widgets/provider_list_view.dart';
 import 'package:jobtrack_uni/presentation/screens/onboarding_screen.dart';
 import 'package:jobtrack_uni/prefs_service.dart';
 import 'package:provider/provider.dart';
@@ -153,42 +154,45 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildCardList() {
-    return ListView.builder(
-      itemCount: _jobCards.length,
-      itemBuilder: (context, index) {
-        // Ordena a lista para mostrar os mais recentes primeiro
-        final card = _jobCards.reversed.toList()[index];
-        return GestureDetector(
-          onLongPress: () {
-            // Abre diálogo de ações
-            showProviderActionsDialog(
-              context,
-              title: 'Ações da vaga',
-              subtitle: '${card.companyName} - ${card.jobTitle}',
-              onEdit: () async {
-                // Abre formulário em modo edição
-                final edited = await showJobCardFormDialog(context, initialCard: card);
-                if (edited != null) {
-                  // substitui o item
-                  setState(() {
-                    final idx = _jobCards.indexWhere((c) => c.id == card.id);
-                    if (idx != -1) _jobCards[idx] = edited;
-                  });
-                  _saveCards();
-                }
-              },
-              onRemove: () async {
-                // Remove item e persiste
+    return ProviderListView(
+      items: _jobCards,
+      onConfirmRemoveFromStorage: (id) async {
+        final prefs = Provider.of<PrefsService>(context, listen: false);
+        final current = prefs.getJobCards();
+        final updated = current.where((c) => c.id != id).toList();
+        await prefs.saveJobCards(updated);
+      },
+      onItemRemoved: (id) {
+        setState(() {
+          _jobCards.removeWhere((c) => c.id == id);
+        });
+      },
+      itemBuilder: (card) => GestureDetector(
+        onLongPress: () {
+          showProviderActionsDialog(
+            context,
+            title: 'Ações da vaga',
+            subtitle: '${card.companyName} - ${card.jobTitle}',
+            onEdit: () async {
+              final edited = await showJobCardFormDialog(context, initialCard: card);
+              if (edited != null) {
                 setState(() {
-                  _jobCards.removeWhere((c) => c.id == card.id);
+                  final idx = _jobCards.indexWhere((c) => c.id == card.id);
+                  if (idx != -1) _jobCards[idx] = edited;
                 });
                 _saveCards();
-              },
-            );
-          },
-          child: JobCardWidget(card: card),
-        );
-      },
+              }
+            },
+            onRemove: () async {
+              setState(() {
+                _jobCards.removeWhere((c) => c.id == card.id);
+              });
+              _saveCards();
+            },
+          );
+        },
+        child: JobCardWidget(card: card),
+      ),
     );
   }
 }
