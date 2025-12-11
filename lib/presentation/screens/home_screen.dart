@@ -5,8 +5,8 @@ import 'package:jobtrack_uni/presentation/widgets/job_card_widget.dart';
 import 'package:jobtrack_uni/features/job_card/presentation/dialogs/provider_actions_dialog.dart';
 import 'package:jobtrack_uni/features/job_card/presentation/dialogs/job_card_form_dialog.dart';
 import 'package:jobtrack_uni/features/job_card/presentation/widgets/provider_list_view.dart';
-import 'package:jobtrack_uni/presentation/screens/onboarding_screen.dart';
 import 'package:jobtrack_uni/prefs_service.dart';
+import 'package:jobtrack_uni/presentation/screens/settings_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:jobtrack_uni/domain/usecases/get_job_cards.dart';
 import 'package:jobtrack_uni/domain/usecases/save_job_cards.dart';
@@ -56,57 +56,11 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  void _showRevokeConsentDialog(BuildContext context, PrefsService prefsService) {
-    showDialog(
-      context: context,
-      builder: (BuildContext dialogContext) {
-        return AlertDialog(
-          title: const Text('Revogar Consentimento'),
-          content: const Text('Você tem certeza que deseja revogar o consentimento? Você será redirecionado para a tela de consentimento.'),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('Cancelar'),
-              onPressed: () {
-                Navigator.of(dialogContext).pop();
-              },
-            ),
-            TextButton(
-              child: const Text('Confirmar'),
-              onPressed: () async {
-                Navigator.of(dialogContext).pop();
-                await prefsService.revokeConsent();
-
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: const Text('Consentimento revogado.'),
-                    action: SnackBarAction(
-                      label: 'Desfazer',
-                      onPressed: () async {
-                         await prefsService.saveConsent();
-                      },
-                    ),
-                  ),
-                );
-                
-                await Future.delayed(const Duration(seconds: 4));
-
-                if (!prefsService.hasAcceptedCurrentPolicies() && mounted) {
-                    Navigator.of(context).pushAndRemoveUntil(
-                      MaterialPageRoute(builder: (context) => const OnboardingScreen()),
-                      (Route<dynamic> route) => false,
-                    );
-                }
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
+  // Revocation of consent is now handled in the Settings screen.
 
   @override
   Widget build(BuildContext context) {
-    final prefsService = Provider.of<PrefsService>(context, listen: false);
+  // PrefsService can be obtained in settings screen when needed.
 
     return Scaffold(
       appBar: AppBar(
@@ -115,7 +69,7 @@ class _HomeScreenState extends State<HomeScreen> {
           IconButton(
             icon: const Icon(Icons.settings),
             onPressed: () {
-              _showRevokeConsentDialog(context, prefsService);
+              Navigator.of(context).push(MaterialPageRoute(builder: (_) => const SettingsScreen()));
             },
           ),
         ],

@@ -6,6 +6,12 @@ import 'package:jobtrack_uni/presentation/screens/splash_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:jobtrack_uni/domain/usecases/get_job_cards.dart';
 import 'package:jobtrack_uni/domain/usecases/save_job_cards.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:jobtrack_uni/features/providers/data/repositories/supabase_providers_repository.dart';
+import 'package:jobtrack_uni/features/providers/domain/repositories/providers_repository.dart';
+// Fallback local secrets (committed example). Developers may copy the
+// example to `secrets/supabase_config.dart` for local overrides.
+import 'package:jobtrack_uni/secrets/supabase_config.example.dart' as local_secrets;
 
 void main() async {
   // Garante que os bindings do Flutter foram inicializados antes de qualquer outra coisa.
@@ -15,6 +21,22 @@ void main() async {
   final prefsService = PrefsService();
   await prefsService.init();
 
+  // First try values from --dart-define (CI/Prod friendly)
+  String supabaseUrl = const String.fromEnvironment('SUPABASE_URL');
+  String supabaseAnonKey = const String.fromEnvironment('SUPABASE_ANNON_KEY');
+
+  // Fallback to local example secrets if dart-define wasn't used.
+  if (supabaseUrl.isEmpty || supabaseAnonKey.isEmpty) {
+    supabaseUrl = local_secrets.SupabaseConfig.url;
+    supabaseAnonKey = local_secrets.SupabaseConfig.anonKey;
+  }
+
+  if (supabaseUrl.isNotEmpty && supabaseAnonKey.isNotEmpty) {
+    await Supabase.initialize(url: supabaseUrl, anonKey: supabaseAnonKey);
+  }
+
+  final supabaseClient = Supabase.instance.client;
+
   // Cria repositório que implementa a abstração JobRepository
   final JobRepository jobRepository = SharedPrefsJobRepository(prefsService);
 
@@ -22,12 +44,18 @@ void main() async {
   final getJobCards = GetJobCards(jobRepository);
   final saveJobCards = SaveJobCards(jobRepository);
 
+  // Providers repository backed by Supabase (uses placeholder `Provider` entity)
+  final ProvidersRepository providersRepository = SupabaseProvidersRepository(supabaseClient);
+
   runApp(
     // Usa o Provider para disponibilizar tanto PrefsService quanto JobRepository na árvore de widgets.
     MultiProvider(
       providers: [
         Provider<PrefsService>.value(value: prefsService),
         Provider<JobRepository>.value(value: jobRepository),
+        // Fornece o Supabase client e a implementação do repositório de providers
+        Provider<SupabaseClient>.value(value: supabaseClient),
+        Provider<ProvidersRepository>.value(value: providersRepository),
         Provider<GetJobCards>.value(value: getJobCards),
         Provider<SaveJobCards>.value(value: saveJobCards),
       ],

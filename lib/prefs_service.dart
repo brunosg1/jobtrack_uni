@@ -64,4 +64,10 @@ class PrefsService {
   Future<void> clearAll() async {
     await _prefs.clear();
   }
+
+  // Limpa somente os dados de cache do app (ex.: job cards), preservando
+  // configurações e consentimento.
+  Future<void> clearCache() async {
+    await _prefs.remove(PrefsKeys.jobCards);
+  }
 }
