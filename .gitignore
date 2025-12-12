@@ -43,3 +43,9 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Secrets (local files with credentials)
+secrets/supabase_config.dart
+lib/secrets/supabase_config.dart
+
+

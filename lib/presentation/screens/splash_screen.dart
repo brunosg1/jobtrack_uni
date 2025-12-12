@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:jobtrack_uni/home_screen.dart';
-import 'package:jobtrack_uni/onboarding_screen.dart';
 import 'package:jobtrack_uni/prefs_service.dart';
 import 'package:provider/provider.dart';
+import 'package:jobtrack_uni/presentation/screens/home_screen.dart';
+import 'package:jobtrack_uni/presentation/screens/onboarding_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -15,8 +15,6 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    // Executa após o primeiro frame para garantir que o BuildContext
-    // já esteja inserido na árvore e que o Provider esteja disponível.
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _decideNextScreen();
     });

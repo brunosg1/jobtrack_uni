@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:jobtrack_uni/add_card_screen.dart';
-import 'package:jobtrack_uni/job_card_model.dart';
+import 'package:jobtrack_uni/domain/entities/job_card.dart';
 import 'package:jobtrack_uni/job_card_widget.dart';
 import 'package:jobtrack_uni/onboarding_screen.dart';
 import 'package:jobtrack_uni/prefs_service.dart';
+import 'package:jobtrack_uni/domain/usecases/get_job_cards.dart';
+import 'package:jobtrack_uni/domain/usecases/save_job_cards.dart';
 import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -23,15 +25,19 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _loadCards() {
-    final prefsService = Provider.of<PrefsService>(context, listen: false);
-    setState(() {
-      _jobCards = prefsService.getJobCards();
+    final getJobCards = Provider.of<GetJobCards>(context, listen: false);
+    getJobCards().then((cards) {
+      if (mounted) {
+        setState(() {
+          _jobCards = cards;
+        });
+      }
     });
   }
 
   void _saveCards() {
-    final prefsService = Provider.of<PrefsService>(context, listen: false);
-    prefsService.saveJobCards(_jobCards);
+    final saveJobCards = Provider.of<SaveJobCards>(context, listen: false);
+    saveJobCards(_jobCards);
   }
 
   void _navigateAndAddCard() async {
@@ -97,7 +103,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final prefsService = Provider.of<PrefsService>(context, listen: false);
+  final prefsService = Provider.of<PrefsService>(context, listen: false);
 
     return Scaffold(
       appBar: AppBar(

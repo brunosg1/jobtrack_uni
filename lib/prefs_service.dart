@@ -1,5 +1,6 @@
 import 'dart:convert';
-import 'package:jobtrack_uni/job_card_model.dart';
+import 'package:flutter/material.dart';
+import 'package:jobtrack_uni/domain/entities/job_card.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 // Chaves de persistência definidas no PRD.
@@ -10,6 +11,8 @@ class PrefsKeys {
   static const String termsRead = 'terms_read_v1';
   static const String acceptedAt = 'accepted_at';
   static const String jobCards = 'job_cards'; // Nova chave
+  static const String themeMode = 'theme_mode';
+  static const String lastSyncAt = 'last_sync_at';
 }
 
 class PrefsService {
@@ -63,5 +66,56 @@ class PrefsService {
   // Limpa todas as preferências (útil para testes).
   Future<void> clearAll() async {
     await _prefs.clear();
+  }
+
+  // Limpa somente os dados de cache do app (ex.: job cards), preservando
+  // configurações e consentimento.
+  Future<void> clearCache() async {
+    await _prefs.remove(PrefsKeys.jobCards);
+  }
+
+  // --- Theme mode persistence ---
+  Future<void> setThemeMode(ThemeMode mode) async {
+    final String str;
+    switch (mode) {
+      case ThemeMode.light:
+        str = 'light';
+        break;
+      case ThemeMode.dark:
+        str = 'dark';
+        break;
+      case ThemeMode.system:
+        str = 'system';
+        break;
+    }
+    await _prefs.setString(PrefsKeys.themeMode, str);
+  }
+
+  ThemeMode getThemeMode() {
+    final value = _prefs.getString(PrefsKeys.themeMode) ?? 'system';
+    switch (value) {
+      case 'light':
+        return ThemeMode.light;
+      case 'dark':
+        return ThemeMode.dark;
+      case 'system':
+      default:
+        return ThemeMode.system;
+    }
+  }
+
+  // --- Last sync timestamp ---
+  Future<void> setLastSyncAt(DateTime at) async {
+    await _prefs.setString(PrefsKeys.lastSyncAt, at.toIso8601String());
+  }
+
+  DateTime? getLastSyncAt() {
+    final s = _prefs.getString(PrefsKeys.lastSyncAt);
+    if (s == null) return null;
+    try {
+      return DateTime.parse(s);
+    } catch (_) {
+      return null;
+    }
   }
 }

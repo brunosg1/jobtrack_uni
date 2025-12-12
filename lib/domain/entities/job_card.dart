@@ -15,7 +15,6 @@ class JobCard {
     required this.appliedDate,
   });
 
-  // Método para converter um objeto JobCard em um Map (para JSON)
   Map<String, dynamic> toJson() {
     return {
       'id': id,
@@ -27,7 +26,6 @@ class JobCard {
     };
   }
 
-  // Método de fábrica para criar um JobCard a partir de um Map (de JSON)
   factory JobCard.fromJson(Map<String, dynamic> json) {
     return JobCard(
       id: json['id'],

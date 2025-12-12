@@ -25,6 +25,9 @@ dependencies:
   # Para gerenciamento de estado e injeção de dependência (opcional, mas recomendado)
   provider: ^6.1.1
   
+  # Supabase client for remote DB and auth
+  supabase_flutter: ^2.6.0
+
   cupertino_icons: ^1.0.2
 
 dev_dependencies:
