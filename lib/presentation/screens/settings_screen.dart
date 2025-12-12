@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:jobtrack_uni/prefs_service.dart';
 import 'package:provider/provider.dart';
 import 'package:jobtrack_uni/presentation/screens/onboarding_screen.dart';
+import 'package:jobtrack_uni/features/sync/sync_service.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -14,6 +15,21 @@ class SettingsScreen extends StatelessWidget {
       appBar: AppBar(title: const Text('Configurações')),
       body: ListView(
         children: [
+          ListTile(
+            leading: const Icon(Icons.sync),
+            title: const Text('Sincronizar agora'),
+            subtitle: const Text('Força sincronização bidirecional com o servidor.'),
+            onTap: () async {
+              final sync = Provider.of<SyncService>(context, listen: false);
+              try {
+                await sync.syncAll();
+                if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Sincronização concluída.')));
+              } catch (e) {
+                if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Erro na sincronização: $e')));
+              }
+            },
+          ),
+          const Divider(),
           ListTile(
             leading: const Icon(Icons.delete_forever),
             title: const Text('Limpar cache'),

@@ -1,4 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Allow network access from the app (required for HTTP/S calls) -->
+    <uses-permission android:name="android.permission.INTERNET" />
     <application
         android:label="jobtrack"
         android:name="${applicationName}"
