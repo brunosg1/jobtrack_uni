@@ -46,3 +46,6 @@ app.*.map.json
 
 # Secrets (local files with credentials)
 secrets/supabase_config.dart
+lib/secrets/supabase_config.dart
+
+
